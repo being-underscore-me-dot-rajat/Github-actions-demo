@@ -12,31 +12,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1 — Checkout this repo
       - name: Checkout this repo
         uses: actions/checkout@v4
 
-      # (optional) If your backend code is in a subdirectory:
-      # working-directory: ./backend
+      # Step 2 — Clone your backend repo
+      - name: Clone backend repository
+        run: |
+          git clone https://github.com/being-underscore-me-dot-rajat/Azure-Pipeline-Demo.git
 
+      # 📝 If your backend is private, use this instead:
+      # - name: Clone backend repository
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     git clone https://github.com/YOUR_USERNAME/YOUR_BACKEND_REPO.git backend
+      #     cd backend
+
+      # Step 3 — Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.10"
 
+      # Step 4 — Install dependencies
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Run backend in background
+      # Step 5 — Run backend in the background
+      - name: Start backend
         run: |
           nohup python app.py > server.log 2>&1 &
-          sleep 5  # give it a few seconds to start
+          sleep 5  # give backend a few seconds to start
 
-      - name: Test if backend is responding
+      # Step 6 — Test backend health
+      - name: Test backend health
         run: |
-          curl -f http://127.0.0.1:8000/health || exit 1
-          echo "✅ Backend is responding correctly!"
+          curl -f http://127.0.0.1:8000/health || (echo "❌ Backend not responding" && exit 1)
+          echo "✅ Backend is healthy!"
 
-      - name: Stop backend (optional)
+      # Step 7 — Stop backend (optional)
+      - name: Stop backend
         run: |
           pkill -f "python app.py" || true
