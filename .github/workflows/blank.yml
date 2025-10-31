@@ -20,6 +20,7 @@ jobs:
       - name: Clone backend repository
         run: |
           git clone https://github.com/being-underscore-me-dot-rajat/Azure-Pipeline-Demo.git
+          sleep 25
 
       # 📝 If your backend is private, use this instead:
       # - name: Clone backend repository
